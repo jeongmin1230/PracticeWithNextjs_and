@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">PracticeWithNextjs</string>
+    <string name="login">로그인</string>
+    <string name="find_id">아이디 찾기</string>
+    <string name="find_password">비밀번호 찾기</string>
+    <string name="login_warning">아이디 또는 비밀번호가 틀립니다.</string>
+    <string name="main">메인</string>
+    <string name="detail">상세보기</string>
+    <string name="welcome">🎉%s님 안녕하세요</string>
+    <string name="empty_list">공지사항이 없습니다.</string>
+    <string name="title">글 제목</string>
+    <string name="content">내용</string>
+    <string name="date">등록일</string>
+    <string name="registrant">작성자</string>
+    <string name="sign_up">회원가입</string>
+    <string name="name">이름</string>
+    <string name="id">아이디</string>
+    <string name="password">비밀번호</string>
+    <string name="confirm_password">비밀번호 확인</string>
+    <string name="phone">핸드폰번호</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+    <string name="back_description">뒤로 가기</string>
 </resources>

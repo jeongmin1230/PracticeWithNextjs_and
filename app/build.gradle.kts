@@ -50,6 +50,16 @@ android {
 }
 
 dependencies {
+    // retrofit
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson.v262)
+    implementation (libs.adapter.rxjava)
+    implementation (libs.converter.scalars)
+    implementation (libs.okhttp)
+    implementation (libs.logging.interceptor)
+    implementation (libs.gson)
+    // navigation
+    implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

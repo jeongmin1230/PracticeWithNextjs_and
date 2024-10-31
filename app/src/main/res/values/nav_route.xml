@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="login_nav">
+        <item>login</item>
+        <item>find_id</item>
+        <item>find_password</item>
+        <item>sign_up</item>
+    </array>
+    <array name="main_nav">
+        <item>first_screen</item>
+        <item>detail_notice</item>
+    </array>
+</resources>
