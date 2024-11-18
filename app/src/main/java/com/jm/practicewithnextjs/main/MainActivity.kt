@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,19 +14,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -33,11 +35,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.jm.practicewithnextjs.AppTopBar
+import com.jm.practicewithnextjs.GeneralButton
 import com.jm.practicewithnextjs.R
 import com.jm.practicewithnextjs.User
 import com.jm.practicewithnextjs.api.model.response.NoticeDetailResponse
 import com.jm.practicewithnextjs.api.model.response.NoticeListResponse
+import com.jm.practicewithnextjs.setTextFieldColor
 import com.jm.practicewithnextjs.ui.theme.PracticeWithNextjsTheme
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,12 +64,29 @@ fun MainScreen(modifier: Modifier) {
     val mainViewModel = MainViewModel()
     val route = stringArrayResource(R.array.main_nav)
     val mainNavController = rememberNavController()
+    val today = SimpleDateFormat(stringResource(R.string.date_format), Locale.getDefault()).format(Date())
     NavHost(navController = mainNavController, startDestination = route[0]) {
         composable(route[0]) {
             Main(mainViewModel.noticeList, mainNavController, mainViewModel.writingId) { mainViewModel.loadList() }
         }
         composable(route[1]) {
-            Detail(mainViewModel.content, mainNavController) { mainViewModel.detail() }
+            Column(Modifier.fillMaxSize()) {
+                AppTopBar(stringResource(R.string.write_announcement)) { mainNavController.popBackStack() }
+                Spacer(Modifier.height(20.dp))
+                Column(Modifier.padding(horizontal = 8.dp)) {
+                    Detail(mainViewModel.loadContent) { mainViewModel.detail() }
+                }
+            }
+        }
+        composable(route[2]) {
+            mainViewModel.init()
+            Column(Modifier.fillMaxSize()) {
+                AppTopBar(stringResource(R.string.write_announcement)) { mainNavController.popBackStack() }
+                Spacer(Modifier.height(20.dp))
+                Column(Modifier.padding(horizontal = 12.dp)) {
+                    Writing(mainViewModel.writeTitle, mainViewModel.writeBody) { mainViewModel.write(today) { mainNavController.popBackStack() } }
+                }
+            }
         }
     }
 }
@@ -70,10 +94,8 @@ fun MainScreen(modifier: Modifier) {
 @Composable
 fun Main(noticeList: MutableState<List<NoticeListResponse.Data>>, navController: NavHostController, clickId: MutableState<String>, loadList: () -> Unit) {
     LaunchedEffect(true) { loadList() }
+    val context = LocalContext.current
     Column(modifier = Modifier.fillMaxSize()) {
-        AppTopBar(stringResource(R.string.main)) {
-            navController.popBackStack()
-        }
         Column(modifier = Modifier
             .background(Color(0xFFBCD4C9))
             .fillMaxWidth()) {
@@ -84,6 +106,24 @@ fun Main(noticeList: MutableState<List<NoticeListResponse.Data>>, navController:
                     .padding(vertical = 4.dp)
                     .fillMaxWidth()
             )
+
+        }
+        if(User.type == stringResource(R.string.manager)) {
+            Spacer(Modifier.height(8.dp))
+            Box(modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .background(Color(0xFFBCD4C9))
+                .fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.write_announcement),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, color = Color.Black),
+                    modifier = Modifier
+                        .padding(vertical = 12.dp)
+                        .fillMaxWidth()
+                        .clickable { navController.navigate(context.resources.getStringArray(R.array.main_nav)[2]) }
+                )
+            }
+            Spacer(Modifier.height(20.dp))
         }
         if(noticeList.value.isNotEmpty()) {
             noticeList.value.forEach {
@@ -127,12 +167,9 @@ fun EachList(title: String, date: String, registrant: String, body: String, navC
 }
 
 @Composable
-fun Detail(content: MutableState<List<NoticeDetailResponse>>, navController: NavHostController, loadDetail: () -> Unit) {
+fun Detail(content: MutableState<List<NoticeDetailResponse>>, loadDetail: () -> Unit) {
     LaunchedEffect(true) { loadDetail() }
     Column {
-        AppTopBar(stringResource(R.string.detail)) {
-            navController.popBackStack()
-        }
         Column(Modifier.padding(horizontal = 12.dp)) {
             content.value.forEach {
                 DetailLayout(
@@ -176,4 +213,37 @@ fun DetailLayout(label: String, text: String, modifier: Modifier) {
             .fillMaxWidth()
     )
     Spacer(Modifier.height(12.dp))
+}
+
+@Composable
+fun Writing(title: MutableState<String>, content: MutableState<String>, write: () -> Unit) {
+    Column {
+        Text(
+            text = stringResource(R.string.title),
+            style = MaterialTheme.typography.titleSmall.copy(Color.Black),
+            modifier = Modifier.padding(start = 12.dp)
+        )
+        TextField(
+            value = title.value,
+            onValueChange = { title.value = it},
+            colors = setTextFieldColor(Color(0xFFE2EDEB)),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = stringResource(R.string.content),
+            style = MaterialTheme.typography.titleSmall.copy(Color.Black),
+            modifier = Modifier.padding(start = 12.dp)
+        )
+        TextField(
+            value = content.value,
+            onValueChange = { content.value = it},
+            colors = setTextFieldColor(Color(0xFFE2EDEB)),
+            modifier = Modifier
+                .height(200.dp)
+                .fillMaxWidth()
+        )
+        Spacer(Modifier.height(20.dp))
+        GeneralButton(Modifier.background(Color(0xFFBCD4C9)), stringResource(R.string.write_announcement)) { write() }
+    }
 }

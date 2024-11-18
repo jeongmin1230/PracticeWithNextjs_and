@@ -6,8 +6,13 @@
         <item>find_password</item>
         <item>sign_up</item>
     </array>
+    <array name="findId_findPassword_nav">
+        <item>enter_info</item>
+        <item>result</item>
+    </array>
     <array name="main_nav">
         <item>first_screen</item>
         <item>detail_notice</item>
+        <item>write</item>
     </array>
 </resources>
