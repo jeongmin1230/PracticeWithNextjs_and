@@ -1,7 +1,6 @@
 package com.jm.practicewithnextjs.login
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import androidx.navigation.NavHostController
 import com.jm.practicewithnextjs.R
 import com.jm.practicewithnextjs.api.builder.APIBuilder
 import com.jm.practicewithnextjs.api.model.request.SignUpRequest
-import com.jm.practicewithnextjs.api.model.response.CheckDuplicateIdResponse
 import com.jm.practicewithnextjs.api.model.response.SignUpResponse
 import com.jm.practicewithnextjs.showToast
 import retrofit2.Call
